@@ -17,9 +17,9 @@ Scopul aplicației este de a demonstra conceptele fundamentale ale framework-ulu
 ---
 
 ## ⚙️ Funcționalități
-
+-Înregistrare / autentificare utilizator
 - Vizualizare listă de artiști și detalii pentru fiecare
-- Vizualizare albume și melodii
+- Vizualizare artisti,albume și melodii
 - Crearea și gestionarea playlist-urilor
 - Adăugare / ștergere melodii din playlist
 - Persistență completă în baza de date SQLite

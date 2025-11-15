@@ -70,37 +70,52 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">
-              <i class="fa-solid fa-house"></i> Acasă
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'artists' %}">
-              <i class="fa-solid fa-user-music"></i> Artiști
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">
-              <i class="fa-solid fa-right-from-bracket"></i> Deconectare
-            </a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">
-              <i class="fa-solid fa-user-plus"></i> Înregistrare
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">
-              <i class="fa-solid fa-right-to-bracket"></i> Login
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
+  <ul class="navbar-nav ms-auto">
+    {% if user.is_authenticated %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'index' %}">
+        <i class="fa-solid fa-house"></i> Acasă
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'artists' %}">
+        <i class="fa-solid fa-user-music"></i> Artiști
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'song_list' %}">
+        <i class="fa-solid fa-music"></i> Melodii
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'playlist_list' %}">
+        <i class="fa-solid fa-list"></i> Playlist-uri
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'upload_song' %}">
+        <i class="fa-solid fa-upload"></i> Upload
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'logout' %}">
+        <i class="fa-solid fa-right-from-bracket"></i> Deconectare
+      </a>
+    </li>
+    {% else %}
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'register' %}">
+        <i class="fa-solid fa-user-plus"></i> Înregistrare
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'login' %}">
+        <i class="fa-solid fa-right-to-bracket"></i> Login
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</div>
     </div>
   </nav>
 

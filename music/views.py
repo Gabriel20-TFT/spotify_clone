@@ -6,7 +6,6 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db import DatabaseError
 from .models import Artist, Album, Song, Playlist
 from .forms import SongForm
-import logging
 from django.http import FileResponse, Http404
 import mimetypes
 from django.conf import settings
@@ -14,6 +13,7 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
+logger = logging.getLogger('music')
 try:
     ...
 except Exception as e:
@@ -45,10 +45,12 @@ def register(request):
         else:
             form = UserCreationForm()
     except DatabaseError:
+        logger.exception("DatabaseError la register")
         messages.error(request, 'Eroare la baza de date. Încearcă mai târziu.')
         form = UserCreationForm()
     except Exception as e:
-        messages.error(request, f'A apărut o eroare neașteptată: {e}')
+        logger.exception("Eroare neașteptată la register")
+        messages.error(request, 'A apărut o eroare neașteptată. Administratorul a fost notificat.')
         form = UserCreationForm()
 
     return render(request, 'music/register.html', {'form': form})
@@ -71,7 +73,8 @@ def user_login(request):
                 messages.error(request, 'Nume utilizator sau parolă incorectă.')
         return render(request, 'music/login.html')
     except Exception as e:
-        messages.error(request, f'A apărut o eroare la autentificare: {e}')
+        logger.exception("Eroare la autentificare")
+        messages.error(request, 'A apărut o eroare la autentificare. Administratorul a fost notificat.')
         return render(request, 'music/login.html')
 
 
@@ -109,10 +112,10 @@ def artist_list(request):
         artists = Artist.objects.all()
         if not artists:
             messages.warning(request, 'Momentan nu există artiști în baza de date.')
-        return render(request, 'artists.html', {'artists': artists})
+        return render(request, 'music/artists.html', {'artists': artists})
     except DatabaseError:
         messages.error(request, 'Eroare la conectarea la baza de date.')
-        return render(request, 'artists.html', {'artists': []})
+        return render(request, 'music/artists.html', {'artists': []})
     except Exception as e:
         messages.error(request, f'A apărut o eroare neașteptată: {e}')
         return render(request, 'music/artists.html', {'artists': []})
@@ -183,7 +186,7 @@ def playlist_detail(request, playlist_id):
         messages.error(request, 'Eroare la baza de date. Nu s-au putut încărca melodiile din playlist.')
         return redirect('playlist_list')
     except Exception as e:
-        messages.error(request, f'Eroare neașteptată: {e}')
+        logger.exception(request, f'Eroare neașteptată: {e}')
         return redirect('playlist_list')
 
 
@@ -198,11 +201,11 @@ def add_song_to_playlist(request, playlist_id, song_id):
         playlist.songs.add(song)
         messages.success(request, f'Melodia "{song.title}" a fost adăugată în playlist!')
     except DatabaseError:
-        logger.exception(f"Eroare la baza de date la adăugarea melodiei {song_id} în playlist {playlist_id}.")  # logare
+        logger.exception("DatabaseError la add_song_to_playlist")
         messages.error(request, 'Eroare la baza de date. Melodia nu a fost adăugată.')
-    except Exception as e:
-        logger.exception(f"Eroare neașteptată la add_song_to_playlist: {e}")  # logare
-        messages.error(request, f'Eroare neașteptată: {e}')
+    except Exception:
+        logger.exception("Eroare neașteptată la add_song_to_playlist")
+        messages.error(request, 'A apărut o eroare neașteptată. Administratorul a fost notificat.')
     return redirect('playlist_detail', playlist_id=playlist_id)
 
 
@@ -235,7 +238,7 @@ def song_list(request):
         messages.error(request, 'Eroare la baza de date. Melodiile nu pot fi afișate.')
         return render(request, 'music/song_list.html', {'songs': []})
     except Exception as e:
-        messages.error(request, f'Eroare neașteptată: {e}')
+        logger.exception(request, f'Eroare neașteptată: {e}')
         return render(request, 'music/song_list.html', {'songs': []})
 
 
@@ -268,11 +271,14 @@ def upload_song(request):
                 messages.error(request, 'Formular invalid. Verifică datele introduse.')
         else:
             form = SongForm()
-    except DatabaseError:
-        messages.error(request, 'Eroare la salvarea în baza de date.')
+    except DatabaseError as db_error:
+        logger.exception("DatabaseError la upload_song")
+        messages.error(request, 'Eroare la salvarea în baza de date. Încearcă mai târziu.')
         form = SongForm()
     except Exception as e:
-        messages.error(request, f'Eroare neașteptată: {e}')
+        # logger.exception va include stack trace în errors.log
+        logger.exception("Eroare neașteptată la upload_song")
+        messages.error(request, 'A apărut o eroare neașteptată. Administratorul a fost notificat.')
         form = SongForm()
     return render(request, 'music/upload_song.html', {'form': form})
 

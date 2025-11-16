@@ -1,27 +1,233 @@
-<h1>{{ playlist.name }}</h1>
-<p>User: {{ playlist.user.username }}</p>
+{% extends 'music/base.html' %}
 
-<h2>Songs in Playlist</h2>
-<ul>
-{% for song in songs %}
-    <li>
-        {{ song.title }} (Album: {{ song.album.title }})
-        <a href="{% url 'remove_song_from_playlist' playlist.id song.id %}">Remove</a>
-    </li>
-{% endfor %}
-</ul>
+{% block title %}{{ playlist.name }} - Spotify Clone{% endblock %}
 
-<h2>Add Songs</h2>
-<ul>
-{% for song in song_list %}
-    {% if song not in songs %}
-    <li>
-        {{ song.title }} (Album: {{ song.album.title }})
-        <a href="{% url 'add_song_to_playlist' playlist.id song.id %}">Add</a>
-    </li>
+{% block content %}
+<div class="container mt-5">
+  <!-- Header Playlist -->
+  <div class="playlist-header mb-5 p-5 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px;">
+    <div class="row align-items-center">
+      <div class="col-md-2 text-center">
+        <div class="playlist-cover">
+          <i class="fa-solid fa-list fa-4x"></i>
+        </div>
+      </div>
+      <div class="col-md-10">
+        <p class="text-uppercase small mb-2" style="letter-spacing: 2px; opacity: 0.8;">Playlist</p>
+        <h1 class="display-4 fw-bold mb-3">{{ playlist.name }}</h1>
+        <p class="mb-0">
+          <i class="fa-solid fa-user me-2"></i>
+          <strong>{{ playlist.user.username }}</strong>
+          <span class="mx-3">•</span>
+          <i class="fa-solid fa-music me-2"></i>
+          <strong>{{ songs.count }} melodii</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Melodii din Playlist -->
+  <div class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold">
+        <i class="fa-solid fa-music me-2 text-primary"></i>
+        Melodii în playlist
+      </h2>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addSongModal">
+        <i class="fa-solid fa-plus me-2"></i>
+        Adaugă melodii
+      </button>
+    </div>
+
+    {% if songs %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>Titlu</th>
+              <th>Album</th>
+              <th>Artiști</th>
+              <th style="width: 100px;" class="text-center">Acțiuni</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for song in songs %}
+              <tr class="song-row">
+                <td class="text-muted">{{ forloop.counter }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="song-icon me-3">
+                      <i class="fa-solid fa-music"></i>
+                    </div>
+                    <strong>{{ song.title }}</strong>
+                  </div>
+                </td>
+                <td class="text-muted">
+                  {% if song.album %}
+                    {{ song.album.title }}
+                  {% else %}
+                    <span class="text-muted fst-italic">Necunoscut</span>
+                  {% endif %}
+                </td>
+                <td class="text-muted">
+                  {% for artist in song.artists.all %}
+                    {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </td>
+                <td class="text-center">
+                  <a href="{% url 'remove_song_from_playlist' playlist.id song.id %}" 
+                     class="btn btn-sm btn-outline-danger"
+                     onclick="return confirm('Sigur vrei să ștergi melodia din playlist?');">
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-music fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+        <h4 class="text-muted">Playlist-ul e gol</h4>
+        <p class="text-muted mb-4">Adaugă prima melodie pentru a începe!</p>
+        <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#addSongModal">
+          <i class="fa-solid fa-plus me-2"></i>
+          Adaugă melodii
+        </button>
+      </div>
     {% endif %}
-{% endfor %}
-</ul>
+  </div>
 
-<a href="{% url 'playlist_list' %}">Back to Playlists</a>
+  <!-- Back Button -->
+  <div class="text-center mt-5">
+    <a href="{% url 'playlist_list' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-arrow-left me-2"></i>
+      Înapoi la playlist-uri
+    </a>
+  </div>
+</div>
 
+<!-- Modal Adăugare Melodii -->
+<div class="modal fade" id="addSongModal" tabindex="-1" aria-labelledby="addSongModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="addSongModalLabel">
+          <i class="fa-solid fa-plus-circle me-2"></i>
+          Adaugă melodii în playlist
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if all_songs %}
+          <div class="list-group">
+            {% for song in all_songs %}
+              {% if song not in songs %}
+                <a href="{% url 'add_song_to_playlist' playlist.id song.id %}" 
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="fa-solid fa-music me-2 text-success"></i>
+                    <strong>{{ song.title }}</strong>
+                    <br>
+                    <small class="text-muted">
+                      {% if song.album %}Album: {{ song.album.title }}{% endif %}
+                      {% if song.artists.all %}
+                        - {% for artist in song.artists.all %}{{ artist.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                      {% endif %}
+                    </small>
+                  </div>
+                  <span class="badge bg-success">
+                    <i class="fa-solid fa-plus"></i>
+                  </span>
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-4">
+            <i class="fa-solid fa-music fa-3x text-muted mb-3"></i>
+            <p class="text-muted">Nu există melodii disponibile.</p>
+          </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Închide</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .playlist-header {
+    animation: fadeIn 0.5s ease;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .playlist-cover {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    backdrop-filter: blur(10px);
+  }
+
+  .song-row {
+    transition: all 0.3s ease;
+  }
+
+  .song-row:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+  }
+
+  .song-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .table {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .btn-outline-danger:hover {
+    transform: scale(1.1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .list-group-item {
+    transition: all 0.3s ease;
+  }
+
+  .list-group-item:hover {
+    background-color: #e8f5e9;
+    transform: translateX(5px);
+  }
+</style>
+{% endblock %}

@@ -1,13 +1,235 @@
 {% extends 'music/base.html' %}
 
+{% block title %}Upload Melodie - Spotify Clone{% endblock %}
+
 {% block content %}
-  <h2>🎵 Încarcă o melodie nouă</h2>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-lg border-0" style="border-radius: 15px;">
+        <div class="card-body p-5">
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <i class="fa-solid fa-upload fa-3x text-primary mb-3"></i>
+            <h2 class="fw-bold">Încarcă o melodie nouă</h2>
+            <p class="text-muted">Adaugă melodiile tale preferate în bibliotecă</p>
+          </div>
 
-  <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">💾 Salvează</button>
-  </form>
+          <!-- Mesaje de eroare/succes -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
-  <a href="{% url 'song_list' %}">⬅️ Înapoi la lista de melodii</a>
+          <!-- Formular -->
+          <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div class="mb-4">
+              <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">
+                <i class="fa-solid fa-music me-2 text-primary"></i> Titlu melodie
+              </label>
+              {{ form.title }}
+              {% if form.title.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.title.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Artists -->
+            <div class="mb-4">
+              <label for="{{ form.artists.id_for_label }}" class="form-label fw-bold">
+                <i class="fa-solid fa-user-music me-2 text-success"></i> Artiști
+              </label>
+              {{ form.artists }}
+              {% if form.artists.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.artists.errors }}
+                </div>
+              {% endif %}
+              <div class="form-text">Poți selecta mai mulți artiști ținând apăsat Ctrl (Cmd pe Mac)</div>
+            </div>
+
+            <!-- Album -->
+            <div class="mb-4">
+              <label for="{{ form.album.id_for_label }}" class="form-label fw-bold">
+                <i class="fa-solid fa-compact-disc me-2 text-warning"></i> Album (opțional)
+              </label>
+              {{ form.album }}
+              {% if form.album.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.album.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Audio File -->
+            <div class="mb-4">
+              <label for="{{ form.audio_file.id_for_label }}" class="form-label fw-bold">
+                <i class="fa-solid fa-file-audio me-2 text-danger"></i> Fișier audio
+              </label>
+              <div class="custom-file-upload">
+                {{ form.audio_file }}
+                <div id="audioFileName" class="mt-2 text-muted small"></div>
+              </div>
+              {% if form.audio_file.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.audio_file.errors }}
+                </div>
+              {% endif %}
+              <div class="form-text">
+                <i class="fa-solid fa-info-circle me-1"></i>
+                Formate acceptate: MP3, WAV, OGG, M4A (max 15MB)
+              </div>
+            </div>
+
+            <!-- Cover Image -->
+            <div class="mb-4">
+              <label for="{{ form.cover_image.id_for_label }}" class="form-label fw-bold">
+                <i class="fa-solid fa-image me-2 text-info"></i> Imagine copertă (opțional)
+              </label>
+              <div class="custom-file-upload">
+                {{ form.cover_image }}
+                <div id="imagePreview" class="mt-3"></div>
+              </div>
+              {% if form.cover_image.errors %}
+                <div class="text-danger small mt-1">
+                  {{ form.cover_image.errors }}
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex gap-3 mt-5">
+              <button type="submit" class="btn btn-primary btn-lg flex-fill" style="border-radius: 10px;">
+                <i class="fa-solid fa-upload me-2"></i> Încarcă melodia
+              </button>
+              <a href="{% url 'song_list' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+                <i class="fa-solid fa-arrow-left me-2"></i> Anulează
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Styling pentru form inputs */
+  #id_title,
+  #id_artists,
+  #id_album {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  #id_title:focus,
+  #id_artists:focus,
+  #id_album:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+
+  /* Multi-select styling */
+  #id_artists {
+    height: 120px;
+  }
+
+  /* File input styling */
+  #id_audio_file,
+  #id_cover_image {
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #d0d0d0;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  #id_audio_file:hover,
+  #id_cover_image:hover {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+  }
+
+  /* Image preview */
+  #imagePreview img {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Card animation */
+  .card {
+    animation: fadeInUp 0.5s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Button hover effects */
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+  }
+
+  .btn-outline-secondary:hover {
+    transform: translateY(-2px);
+  }
+</style>
+
+<script>
+  // Afișează numele fișierului audio selectat
+  document.getElementById('id_audio_file').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Niciun fișier selectat';
+    document.getElementById('audioFileName').innerHTML =
+      `<i class="fa-solid fa-file-audio me-2"></i><strong>${fileName}</strong>`;
+  });
+
+  // Preview pentru imagine
+  document.getElementById('id_cover_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('imagePreview').innerHTML =
+          `<img src="${e.target.result}" alt="Preview" class="img-thumbnail">`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Validare înainte de submit
+  document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    const title = document.getElementById('id_title').value.trim();
+    const audioFile = document.getElementById('id_audio_file').files.length;
+
+    if (!title || !audioFile) {
+      e.preventDefault();
+      alert('⚠️ Te rugăm să completezi cel puțin titlul și să încarci un fișier audio!');
+    }
+  });
+</script>
 {% endblock %}

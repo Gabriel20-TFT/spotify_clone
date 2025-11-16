@@ -1,6 +1,8 @@
 from django import forms
 from .models import Song
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 import os
 
 
@@ -23,3 +25,18 @@ class SongForm(forms.ModelForm):
         if ext not in valid_ext:
             raise ValidationError('Format audio neacceptat. Folosește mp3, wav, ogg sau m4a.')
         return f
+
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True, help_text='Obligatoriu. Introdu o adresă de email validă.')
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")
+
+    def save(self, commit=True):
+        user = super(CustomUserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user

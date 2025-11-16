@@ -2,11 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import SongForm, CustomUserCreationForm
 from django.db import DatabaseError
 from .models import Artist, Album, Song, Playlist
 from .forms import SongForm
 from django.http import FileResponse, Http404
+from django.contrib.admin.views.decorators import staff_member_required
 import mimetypes
 from django.conf import settings
 import os
@@ -34,24 +36,24 @@ def welcome(request):
 def register(request):
     try:
         if request.method == 'POST':
-            form = UserCreationForm(request.POST)
+            form = CustomUserCreationForm(request.POST)
             if form.is_valid():
                 user = form.save()
                 login(request, user)
                 messages.success(request, 'Contul tău a fost creat cu succes!')
-                return redirect('welcome')
+                return redirect('index')
             else:
                 messages.error(request, 'Datele introduse nu sunt valide. Încearcă din nou.')
         else:
-            form = UserCreationForm()
+            form = CustomUserCreationForm()
     except DatabaseError:
         logger.exception("DatabaseError la register")
         messages.error(request, 'Eroare la baza de date. Încearcă mai târziu.')
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     except Exception as e:
         logger.exception("Eroare neașteptată la register")
         messages.error(request, 'A apărut o eroare neașteptată. Administratorul a fost notificat.')
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
     return render(request, 'music/register.html', {'form': form})
 
@@ -68,7 +70,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, 'Autentificare reușită!')
-                return redirect('welcome')
+                return redirect('index')
             else:
                 messages.error(request, 'Nume utilizator sau parolă incorectă.')
         return render(request, 'music/login.html')
@@ -181,12 +183,17 @@ def playlist_detail(request, playlist_id):
     try:
         playlist = get_object_or_404(Playlist, id=playlist_id)
         songs = playlist.songs.all()
-        return render(request, 'music/playlist_detail.html', {'playlist': playlist, 'songs': songs})
+        all_songs = Song.objects.all()
+        return render(request, 'music/playlist_detail.html', {
+            'playlist': playlist,
+            'songs': songs,
+            'all_songs': all_songs
+        })
     except DatabaseError:
         messages.error(request, 'Eroare la baza de date. Nu s-au putut încărca melodiile din playlist.')
         return redirect('playlist_list')
     except Exception as e:
-        logger.exception(request, f'Eroare neașteptată: {e}')
+        logger.exception(f'Eroare neașteptată: {e}')
         return redirect('playlist_list')
 
 
@@ -258,7 +265,7 @@ def song_detail(request, song_id):
 # ======================
 # Încărcare melodie nouă
 # ======================
-@login_required(login_url='login')
+@staff_member_required(login_url='login')
 def upload_song(request):
     try:
         if request.method == 'POST':

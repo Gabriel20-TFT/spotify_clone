@@ -1,18 +1,189 @@
 {% extends 'music/base.html' %}
 
+{% block title %}Playlist-uri - Spotify Clone{% endblock %}
+
 {% block content %}
-<h1>Playlist-uri</h1>
+<div class="container mt-5">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">
+      <i class="fa-solid fa-list-music me-3" style="color: #1db954;"></i>
+      Playlist-urile Tale
+    </h1>
+    <p class="lead text-muted">Descoperă și ascultă colecțiile tale muzicale</p>
+  </div>
 
-<ul>
-    {% for playlist in playlists %}
-        <li>
-            <a href="{% url 'playlist_detail' playlist.id %}">{{ playlist.name }}</a>
-            - creat de {{ playlist.user.username }}
-        </li>
-    {% empty %}
-        <li>Nu există playlist-uri.</li>
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
     {% endfor %}
-</ul>
+  {% endif %}
 
-<a href="{% url 'index' %}">Înapoi la Home</a>
+  <!-- Playlists Grid -->
+  {% if playlists %}
+    <div class="row g-4">
+      {% for playlist in playlists %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card playlist-card h-100 shadow-sm border-0" style="border-radius: 15px; transition: all 0.3s ease;">
+            <div class="card-body p-4">
+              <!-- Icon și Nume -->
+              <div class="d-flex align-items-center mb-3">
+                <div class="playlist-icon me-3">
+                  <i class="fa-solid fa-list fa-2x text-white"></i>
+                </div>
+                <div>
+                  <h5 class="card-title mb-1 fw-bold">{{ playlist.name }}</h5>
+                  <p class="card-text text-muted small mb-0">
+                    <i class="fa-solid fa-user me-1"></i>
+                    {{ playlist.user.username }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Statistici -->
+              <div class="playlist-stats mb-3">
+                <span class="badge bg-primary me-2">
+                  <i class="fa-solid fa-music me-1"></i>
+                  {{ playlist.songs.count }} melodii
+                </span>
+                {% if playlist.user == user %}
+                  <span class="badge bg-success">
+                    <i class="fa-solid fa-crown me-1"></i>
+                    Al meu
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Buton -->
+              <a href="{% url 'playlist_detail' playlist.id %}" class="btn btn-outline-primary w-100" style="border-radius: 10px;">
+                <i class="fa-solid fa-play me-2"></i>
+                Deschide playlist
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="empty-state">
+        <i class="fa-solid fa-folder-open fa-5x text-muted mb-4" style="opacity: 0.3;"></i>
+        <h3 class="text-muted mb-3">Nu există playlist-uri</h3>
+        <p class="text-muted mb-4">Creează primul tău playlist și adaugă melodiile preferate!</p>
+        <a href="{% url 'index' %}" class="btn btn-success btn-lg" style="border-radius: 10px;">
+          <i class="fa-solid fa-plus me-2"></i>
+          Creează playlist
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Back Button -->
+  <div class="text-center mt-5">
+    <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-arrow-left me-2"></i>
+      Înapoi la pagina principală
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Playlist Card Styling */
+  .playlist-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    animation: fadeInUp 0.5s ease;
+  }
+
+  .playlist-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4) !important;
+  }
+
+  .playlist-card:nth-child(3n+1) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .playlist-card:nth-child(3n+2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .playlist-card:nth-child(3n+3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+
+  .playlist-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .playlist-card .card-title {
+    color: white;
+    font-size: 1.3rem;
+  }
+
+  .playlist-card .btn-outline-primary {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: white;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .playlist-card .btn-outline-primary:hover {
+    background: white;
+    color: #667eea;
+    border-color: white;
+    transform: scale(1.05);
+  }
+
+  .badge {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  /* Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation pentru carduri */
+  .playlist-card:nth-child(1) { animation-delay: 0.1s; }
+  .playlist-card:nth-child(2) { animation-delay: 0.2s; }
+  .playlist-card:nth-child(3) { animation-delay: 0.3s; }
+  .playlist-card:nth-child(4) { animation-delay: 0.4s; }
+  .playlist-card:nth-child(5) { animation-delay: 0.5s; }
+  .playlist-card:nth-child(6) { animation-delay: 0.6s; }
+
+  /* Empty State */
+  .empty-state {
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
 {% endblock %}

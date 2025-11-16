@@ -5,20 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d965bf32-d456-47da-a230-d86e3a5072e5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/music/tests/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/migrate_genres.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/music/templates/music/album_list.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/music/templates/music/genre_detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/music/templates/music/genre_list.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/music/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/music/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/album_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/album_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/artist_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/artist_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/artist_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/artist_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/artists.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/artists.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/song_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/song_detail.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/templates/music/song_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/song_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/music/tests/test_basic.py" beforeDir="false" afterPath="$PROJECT_DIR$/music/tests/test_basic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/music/templates/music/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/music/templates/music/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/music/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/music/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/music/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/music/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -109,7 +103,7 @@
       <workItem from="1763195487949" duration="852000" />
       <workItem from="1763197334603" duration="3556000" />
       <workItem from="1763216169062" duration="15145000" />
-      <workItem from="1763279432488" duration="16363000" />
+      <workItem from="1763279432488" duration="20943000" />
     </task>
     <servers />
   </component>

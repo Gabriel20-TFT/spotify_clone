@@ -12,6 +12,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=200)
     bio = models.TextField(blank=True)
     genre = models.CharField(max_length=100, blank=True, null=True)
+    genres = models.ManyToManyField(Genre, blank=True, related_name='artists')
 
     def __str__(self):
         return self.name

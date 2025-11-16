@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import SongForm, CustomUserCreationForm
 from django.db import DatabaseError
-from .models import Artist, Album, Song, Playlist
+from .models import Artist, Album, Song, Playlist,Genre
 from .forms import SongForm
 from django.http import FileResponse, Http404
 from django.contrib.admin.views.decorators import staff_member_required
@@ -155,6 +155,19 @@ def album_detail(request, album_id):
     except Exception as e:
         messages.error(request, f'Eroare neașteptată: {e}')
         return redirect('artist_list')
+
+@login_required(login_url='login')
+def album_list(request):
+    try:
+        albums = Album.objects.all()
+        return render(request, 'music/album_list.html', {'albums': albums})
+    except DatabaseError:
+        messages.error(request, 'Eroare la baza de date.')
+        return render(request, 'music/album_list.html', {'albums': []})
+    except Exception as e:
+        logger.exception("Eroare la album_list")
+        messages.error(request, f'Eroare: {e}')
+        return render(request, 'music/album_list.html', {'albums': []})
 
 
 # ======================
@@ -319,3 +332,32 @@ def statistics(request):
         logger.exception("Eroare la statistics")
         messages.error(request, f'Eroare la încărcarea statisticilor: {e}')
         return redirect('index')
+
+# Lista genurilor
+@login_required(login_url='login')
+def genre_list(request):
+    try:
+        genres = Genre.objects.all()
+        genres_with_count = []
+        for genre in genres:
+            genres_with_count.append({
+                'genre': genre,
+                'artist_count': genre.artists.count()
+            })
+        return render(request, 'music/genre_list.html', {'genres': genres_with_count})
+    except Exception as e:
+        logger.exception("Eroare la genre_list")
+        messages.error(request, f'Eroare: {e}')
+        return redirect('index')
+
+# Artiști dintr-un gen
+@login_required(login_url='login')
+def genre_detail(request, genre_id):
+    try:
+        genre = get_object_or_404(Genre, id=genre_id)
+        artists = genre.artists.all()
+        return render(request, 'music/genre_detail.html', {'genre': genre, 'artists': artists})
+    except Exception as e:
+        logger.exception("Eroare la genre_detail")
+        messages.error(request, f'Eroare: {e}')
+        return redirect('genre_list')

@@ -1,0 +1,238 @@
+{% extends 'music/base.html' %}
+
+{% block title %}Genuri Muzicale - Spotify Clone{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">
+      <i class="fa-solid fa-guitar me-3" style="color: #1db954;"></i>
+      Genuri Muzicale
+    </h1>
+    <p class="lead text-muted">Explorează muzica pe stiluri și genuri</p>
+  </div>
+
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Genres Grid -->
+  {% if genres %}
+    <div class="row g-4">
+      {% for item in genres %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+          <a href="{% url 'genre_detail' item.genre.id %}" class="text-decoration-none">
+            <div class="genre-card h-100">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                  <!-- Icon -->
+                  <div class="genre-icon mx-auto mb-3">
+                    <i class="fa-solid fa-record-vinyl fa-3x text-white"></i>
+                  </div>
+                  
+                  <!-- Genre Name -->
+                  <h4 class="card-title fw-bold mb-2 text-dark">{{ item.genre.name }}</h4>
+                  
+                  <!-- Artist Count -->
+                  <p class="card-text text-muted mb-3">
+                    <i class="fa-solid fa-user-music me-1"></i>
+                    {{ item.artist_count }} artiști
+                  </p>
+                  
+                  <!-- Button -->
+                  <div class="genre-arrow">
+                    <i class="fa-solid fa-arrow-right fa-2x"></i>
+                  </div>
+                </div>
+                
+                <!-- Hover Overlay -->
+                <div class="genre-overlay">
+                  <i class="fa-solid fa-music fa-4x"></i>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="empty-state">
+        <i class="fa-solid fa-music fa-5x text-muted mb-4" style="opacity: 0.3;"></i>
+        <h3 class="text-muted mb-3">Nu există genuri</h3>
+        <p class="text-muted mb-4">Momentan nu sunt genuri muzicale în bibliotecă</p>
+        <a href="{% url 'index' %}" class="btn btn-success btn-lg" style="border-radius: 10px;">
+          <i class="fa-solid fa-home me-2"></i>
+          Înapoi acasă
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Back Button -->
+  {% if genres %}
+    <div class="text-center mt-5">
+      <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+        <i class="fa-solid fa-arrow-left me-2"></i>
+        Înapoi la pagina principală
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  /* Genre Card Styling */
+  .genre-card {
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease;
+    position: relative;
+  }
+
+  .genre-card .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    transition: all 0.4s ease;
+    background: white;
+  }
+
+  .genre-card:hover .card {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(29, 185, 84, 0.3) !important;
+  }
+
+  /* Genre Icon */
+  .genre-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+    transition: all 0.4s ease;
+  }
+
+  .genre-card:hover .genre-icon {
+    transform: scale(1.15) rotate(10deg);
+    box-shadow: 0 12px 24px rgba(29, 185, 84, 0.5);
+  }
+
+  /* Gradient variations */
+  .genre-card:nth-child(4n+1) .genre-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  }
+
+  .genre-card:nth-child(4n+2) .genre-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+  }
+
+  .genre-card:nth-child(4n+3) .genre-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+  }
+
+  .genre-card:nth-child(4n+4) .genre-icon {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    box-shadow: 0 8px 16px rgba(67, 233, 123, 0.3);
+  }
+
+  /* Arrow */
+  .genre-arrow {
+    transition: all 0.3s ease;
+    opacity: 0.3;
+  }
+
+  .genre-card:hover .genre-arrow {
+    opacity: 1;
+    transform: translateX(10px);
+  }
+
+  .genre-arrow i {
+    color: #1db954;
+  }
+
+  /* Hover Overlay */
+  .genre-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(29, 185, 84, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s ease;
+    border-radius: 15px;
+    color: white;
+  }
+
+  .genre-card:hover .genre-overlay {
+    opacity: 1;
+  }
+
+  .genre-overlay i {
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+  }
+
+  .genre-card:hover .genre-overlay i {
+    transform: scale(1) rotate(360deg);
+  }
+
+  /* Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation */
+  .genre-card:nth-child(1) { animation-delay: 0.05s; }
+  .genre-card:nth-child(2) { animation-delay: 0.1s; }
+  .genre-card:nth-child(3) { animation-delay: 0.15s; }
+  .genre-card:nth-child(4) { animation-delay: 0.2s; }
+  .genre-card:nth-child(5) { animation-delay: 0.25s; }
+  .genre-card:nth-child(6) { animation-delay: 0.3s; }
+  .genre-card:nth-child(7) { animation-delay: 0.35s; }
+  .genre-card:nth-child(8) { animation-delay: 0.4s; }
+  .genre-card:nth-child(9) { animation-delay: 0.45s; }
+  .genre-card:nth-child(10) { animation-delay: 0.5s; }
+  .genre-card:nth-child(11) { animation-delay: 0.55s; }
+  .genre-card:nth-child(12) { animation-delay: 0.6s; }
+
+  /* Empty State */
+  .empty-state {
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Link reset */
+  .genre-card a {
+    color: inherit;
+  }
+</style>
+{% endblock %}

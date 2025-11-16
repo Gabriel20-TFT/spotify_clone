@@ -14,6 +14,7 @@ urlpatterns = [
     path('artists/', views.artist_list, name='artists'),
     path('artist/<int:artist_id>/', views.artist_detail, name='artist_detail'),
     path('album/<int:album_id>/', views.album_detail, name='album_detail'),
+    path('albums/', views.album_list, name='album_list'),
 
     # Melodii
     path('songs/', views.song_list, name='song_list'),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('playlist/<int:playlist_id>/remove/<int:song_id>/', views.remove_song_from_playlist, name='remove_song_from_playlist'),
 
     path('statistics/', views.statistics, name='statistics'),
+    path('genres/', views.genre_list, name='genre_list'),
+    path('genre/<int:genre_id>/', views.genre_detail, name='genre_detail'),
 ]
 
 

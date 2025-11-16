@@ -1,0 +1,274 @@
+{% extends 'music/base.html' %}
+
+{% block title %}{{ genre.name }} - Spotify Clone{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Genre Header -->
+  <div class="genre-header mb-5 p-5 text-white" style="background: linear-gradient(135deg, #1db954 0%, #1ed760 100%); border-radius: 20px;">
+    <div class="row align-items-center">
+      <div class="col-md-3 text-center">
+        <!-- Genre Icon -->
+        <div class="genre-icon-large mx-auto">
+          <i class="fa-solid fa-record-vinyl fa-5x"></i>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <p class="text-uppercase small mb-2" style="letter-spacing: 2px; opacity: 0.8;">Gen Muzical</p>
+        <h1 class="display-2 fw-bold mb-3">{{ genre.name }}</h1>
+
+        <div class="genre-stats d-flex align-items-center flex-wrap gap-3">
+          <span>
+            <i class="fa-solid fa-user-music me-2"></i>
+            <strong>{{ artists.count }}</strong> artiști
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Artists Section -->
+  <div class="mb-5">
+    <h2 class="fw-bold mb-4">
+      <i class="fa-solid fa-microphone me-2 text-primary"></i>
+      Artiști {{ genre.name }}
+    </h2>
+
+    {% if artists %}
+      <div class="row g-4">
+        {% for artist in artists %}
+          <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="artist-card h-100" data-artist-index="{{ forloop.counter0 }}">
+              <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-body text-center p-4">
+                    <!-- Avatar Circle -->
+                    <div class="artist-avatar mx-auto mb-3">
+                      <i class="fa-solid fa-user-music fa-3x text-white"></i>
+                    </div>
+
+                    <!-- Artist Name -->
+                    <h5 class="card-title fw-bold mb-2">{{ artist.name }}</h5>
+
+                    <!-- Bio Preview -->
+                    {% if artist.bio %}
+                      <p class="card-text text-muted small mb-3">
+                        {{ artist.bio|truncatewords:8 }}
+                      </p>
+                    {% else %}
+                      <p class="card-text text-muted small mb-3 fst-italic">
+                        Artist {{ genre.name }}
+                      </p>
+                    {% endif %}
+
+                    <!-- Stats -->
+                    <div class="artist-stats">
+                      <span class="badge bg-primary">
+                        <i class="fa-solid fa-music me-1"></i>
+                        {{ artist.songs.count }} melodii
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Hover Overlay -->
+                  <div class="artist-overlay">
+                    <i class="fa-solid fa-circle-play fa-3x"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-user-slash fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+        <h4 class="text-muted">Niciun artist în acest gen</h4>
+        <p class="text-muted">Momentan nu sunt artiști de {{ genre.name }} în bibliotecă</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Button -->
+  <div class="text-center mt-5">
+    <a href="{% url 'genre_list' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-arrow-left me-2"></i>
+      Înapoi la genuri
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Genre Header */
+  .genre-header {
+    animation: fadeIn 0.6s ease;
+    box-shadow: 0 10px 30px rgba(29, 185, 84, 0.4);
+  }
+
+  /* Genre Icon Large */
+  .genre-icon-large {
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .genre-icon-large:hover {
+    transform: scale(1.1) rotate(360deg);
+  }
+
+  /* Artist Card */
+  .artist-card {
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease;
+    position: relative;
+  }
+
+  .artist-card .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .card {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(29, 185, 84, 0.3) !important;
+  }
+
+  /* Artist Avatar */
+  .artist-avatar {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .artist-avatar {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 24px rgba(29, 185, 84, 0.5);
+  }
+
+  /* Gradient variations */
+  .artist-card:nth-child(3n+1) .artist-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  }
+
+  .artist-card:nth-child(3n+2) .artist-avatar {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+  }
+
+  .artist-card:nth-child(3n+3) .artist-avatar {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+  }
+
+  /* Hover overlay */
+  .artist-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(29, 185, 84, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s ease;
+    border-radius: 15px;
+    color: white;
+  }
+
+  .artist-card:hover .artist-overlay {
+    opacity: 1;
+  }
+
+  .artist-overlay i {
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .artist-overlay i {
+    transform: scale(1);
+  }
+
+  /* Badge Styling */
+  .artist-stats .badge {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 20px;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation */
+  .artist-card:nth-child(1) { animation-delay: 0.05s; }
+  .artist-card:nth-child(2) { animation-delay: 0.1s; }
+  .artist-card:nth-child(3) { animation-delay: 0.15s; }
+  .artist-card:nth-child(4) { animation-delay: 0.2s; }
+  .artist-card:nth-child(5) { animation-delay: 0.25s; }
+  .artist-card:nth-child(6) { animation-delay: 0.3s; }
+  .artist-card:nth-child(7) { animation-delay: 0.35s; }
+  .artist-card:nth-child(8) { animation-delay: 0.4s; }
+  .artist-card:nth-child(9) { animation-delay: 0.45s; }
+  .artist-card:nth-child(10) { animation-delay: 0.5s; }
+  .artist-card:nth-child(11) { animation-delay: 0.55s; }
+  .artist-card:nth-child(12) { animation-delay: 0.6s; }
+
+  /* Link color reset */
+  .artist-card a {
+    color: inherit;
+  }
+
+  .artist-card a:hover {
+    color: inherit;
+  }
+</style>
+{% endblock %}

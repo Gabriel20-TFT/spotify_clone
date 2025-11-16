@@ -1,26 +1,257 @@
 {% extends 'music/base.html' %}
 
-{% block title %}Bun venit - Music App{% endblock %}
+{% block title %}Dashboard - Spotify Clone{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin-top: 100px;">
-    <h1>🎵 Bine ai venit la Music Library 🎶</h1>
-    <p>Gestionează melodiile tale preferate, artiștii și playlist-urile într-un singur loc.</p>
+<div class="container mt-5">
+  <!-- Welcome Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-3 fw-bold mb-3">
+      Bine ai venit, <span style="color: #1db954;">{{ user.username }}</span>! 🎵
+    </h1>
+    <p class="lead text-muted">Descoperă și gestionează muzica ta preferată</p>
+  </div>
 
-    {% if user.is_authenticated %}
-        <a href="{% url 'song_list' %}"
-           style="background-color:#6cf; color:#000; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:bold;">
-           🚀 Intră în aplicație
-        </a>
-    {% else %}
-        <a href="{% url 'login' %}"
-           style="background-color:#6cf; color:#000; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:bold; margin-right:10px;">
-           🔑 Login
-        </a>
-        <a href="{% url 'register' %}"
-           style="background-color:#4caf50; color:#fff; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:bold;">
-           📝 Înregistrează-te
-        </a>
-    {% endif %}
+  <!-- Quick Stats Cards -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-3">
+      <a href="{% url 'artists' %}" class="text-decoration-none">
+        <div class="stat-card h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="card-body text-center p-4">
+            <i class="fa-solid fa-user-music fa-3x text-white mb-3"></i>
+            <h3 class="text-white fw-bold mb-2">Artiști</h3>
+            <p class="text-white-50 mb-0">Descoperă artiști</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <a href="{% url 'song_list' %}" class="text-decoration-none">
+        <div class="stat-card h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div class="card-body text-center p-4">
+            <i class="fa-solid fa-music fa-3x text-white mb-3"></i>
+            <h3 class="text-white fw-bold mb-2">Melodii</h3>
+            <p class="text-white-50 mb-0">Toate melodiile</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <a href="{% url 'playlist_list' %}" class="text-decoration-none">
+        <div class="stat-card h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <div class="card-body text-center p-4">
+            <i class="fa-solid fa-list-music fa-3x text-white mb-3"></i>
+            <h3 class="text-white fw-bold mb-2">Playlist-uri</h3>
+            <p class="text-white-50 mb-0">Colecțiile tale</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <a href="{% url 'statistics' %}" class="text-decoration-none">
+        <div class="stat-card h-100" style="background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);">
+          <div class="card-body text-center p-4">
+            <i class="fa-solid fa-chart-bar fa-3x text-white mb-3"></i>
+            <h3 class="text-white fw-bold mb-2">Statistici</h3>
+            <p class="text-white-50 mb-0">Vezi detalii</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card border-0 shadow-lg" style="border-radius: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card-body p-5 text-white">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h2 class="fw-bold mb-3">
+                <i class="fa-solid fa-fire me-2"></i>
+                Explorează muzica
+              </h2>
+              <p class="lead mb-0">
+                Descoperă noi artiști, creează playlist-uri personalizate și bucură-te de muzica ta preferată
+              </p>
+            </div>
+            <div class="col-md-4 text-center">
+              <a href="{% url 'song_list' %}" class="btn btn-light btn-lg px-5" style="border-radius: 15px; font-weight: 600;">
+                <i class="fa-solid fa-play me-2"></i>
+                Ascultă acum
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card card border-0 shadow h-100" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fa-solid fa-headphones fa-2x text-primary"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Ascultă Online</h4>
+          <p class="text-muted mb-3">
+            Streamează melodiile tale preferate direct din browser, fără descărcări
+          </p>
+          <a href="{% url 'song_list' %}" class="btn btn-outline-primary">
+            Explorează <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card card border-0 shadow h-100" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fa-solid fa-list-ul fa-2x text-success"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Creează Playlist-uri</h4>
+          <p class="text-muted mb-3">
+            Organizează melodiile în playlist-uri personalizate pentru orice mood
+          </p>
+          <a href="{% url 'playlist_list' %}" class="btn btn-outline-success">
+            Vezi playlist-uri <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="feature-card card border-0 shadow h-100" style="border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="feature-icon mb-3">
+            <i class="fa-solid fa-download fa-2x text-info"></i>
+          </div>
+          <h4 class="fw-bold mb-3">Descarcă Melodii</h4>
+          <p class="text-muted mb-3">
+            Salvează melodiile offline pentru a le asculta oricând, oriunde
+          </p>
+          <a href="{% url 'song_list' %}" class="btn btn-outline-info">
+            Descoperă <i class="fa-solid fa-arrow-right ms-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if user.is_superuser %}
+  <!-- Admin Quick Actions -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <div class="card border-0 shadow" style="border-radius: 15px; border-left: 5px solid #ffc107;">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3">
+            <i class="fa-solid fa-crown text-warning me-2"></i>
+            Acțiuni Admin
+          </h5>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="{% url 'upload_song' %}" class="btn btn-warning">
+              <i class="fa-solid fa-upload me-2"></i>
+              Upload melodie
+            </a>
+            <a href="/admin/" class="btn btn-outline-warning">
+              <i class="fa-solid fa-gear me-2"></i>
+              Django Admin
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
+
+<style>
+  /* Stat Cards */
+  .stat-card {
+    border-radius: 15px;
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-card i {
+    transition: all 0.4s ease;
+  }
+
+  .stat-card:hover i {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.8s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .feature-icon {
+    width: 60px;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation */
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.2s; }
+  .stat-card:nth-child(3) { animation-delay: 0.3s; }
+  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .feature-card:nth-child(1) { animation-delay: 0.5s; }
+  .feature-card:nth-child(2) { animation-delay: 0.6s; }
+  .feature-card:nth-child(3) { animation-delay: 0.7s; }
+
+  /* Button Hover */
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Welcome header animation */
+  .display-3 {
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
 {% endblock %}

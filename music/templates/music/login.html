@@ -1,29 +1,198 @@
 {% extends 'music/base.html' %}
 
-{% block title %}🔑 Login{% endblock %}
+{% block title %}Login - Spotify Clone{% endblock %}
 
 {% block content %}
-<h2 style="text-align:center;">🔐 Autentificare utilizator</h2>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-lg border-0" style="border-radius: 15px;">
+        <div class="card-body p-5">
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <i class="fa-solid fa-right-to-bracket fa-3x text-primary mb-3"></i>
+            <h2 class="fw-bold">Autentificare</h2>
+            <p class="text-muted">Bine ai revenit! Intră în cont</p>
+          </div>
 
-<form method="POST" style="max-width:400px; margin:auto; background:#222; padding:20px; border-radius:10px;">
-    {% csrf_token %}
+          <!-- Mesaje de eroare/succes -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
-    {% if form.errors %}
-        <p style="color:#ff6666; text-align:center;">Datele introduse sunt incorecte. Încearcă din nou.</p>
-    {% endif %}
+          <!-- Formular -->
+          <form method="POST" novalidate>
+            {% csrf_token %}
 
-    <label for="username">Utilizator:</label><br>
-    <input type="text" name="username" required style="width:100%; padding:8px; margin-top:5px; border-radius:5px; border:none;"><br><br>
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">
+                <i class="fa-solid fa-user me-1 text-primary"></i> Nume utilizator
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                class="form-control form-control-lg"
+                placeholder="Introdu username-ul"
+                required
+                autocomplete="username"
+              >
+            </div>
 
-    <label for="password">Parolă:</label><br>
-    <input type="password" name="password" required style="width:100%; padding:8px; margin-top:5px; border-radius:5px; border:none;"><br><br>
+            <!-- Password -->
+            <div class="mb-4">
+              <label for="password" class="form-label">
+                <i class="fa-solid fa-lock me-1 text-primary"></i> Parolă
+              </label>
+              <div class="input-group">
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  class="form-control form-control-lg"
+                  placeholder="Introdu parola"
+                  required
+                  autocomplete="current-password"
+                >
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                  <i class="fa-solid fa-eye" id="eyeIcon"></i>
+                </button>
+              </div>
+            </div>
 
-    <button type="submit" style="width:100%; padding:10px; border:none; background-color:#1db954; color:white; font-weight:bold; border-radius:5px; cursor:pointer;">
-        Autentificare
-    </button>
-</form>
+            <!-- Buton submit -->
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 10px;">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Intră în cont
+              </button>
+            </div>
+          </form>
 
-<p style="text-align:center; margin-top:15px;">
-    Nu ai cont? <a href="{% url 'register' %}" style="color:#1db954;">Înregistrează-te aici</a>.
-</p>
+          <!-- Separator -->
+          <div class="text-center my-4">
+            <hr class="my-3">
+          </div>
+
+          <!-- Link la register -->
+          <div class="text-center">
+            <p class="text-muted mb-0">
+              Nu ai cont?
+              <a href="{% url 'register' %}" class="text-decoration-none fw-bold text-success">
+                Creează-ți cont acum
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back to welcome -->
+      <div class="text-center mt-4">
+        <a href="{% url 'welcome' %}" class="text-muted text-decoration-none">
+          <i class="fa-solid fa-arrow-left me-2"></i>
+          Înapoi la pagina de bun venit
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Form Control Styling */
+  .form-control {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+
+  /* Input Group */
+  .input-group .form-control:focus {
+    z-index: 2;
+  }
+
+  .input-group .btn {
+    border: 2px solid #e0e0e0;
+    border-left: none;
+  }
+
+  .input-group .form-control:focus + .btn {
+    border-color: #0d6efd;
+  }
+
+  /* Card Animation */
+  .card {
+    animation: fadeInUp 0.5s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Button Hover */
+  .btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+  }
+
+  /* Link Hover */
+  a.text-success:hover {
+    text-decoration: underline !important;
+  }
+
+  /* Icon styling */
+  .fa-eye, .fa-eye-slash {
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  // Toggle password visibility
+  document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.classList.remove('fa-eye');
+      eyeIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.classList.remove('fa-eye-slash');
+      eyeIcon.classList.add('fa-eye');
+    }
+  });
+
+  // Focus animation
+  document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('focus', function() {
+      this.parentElement.style.transform = 'scale(1.02)';
+      this.parentElement.style.transition = 'all 0.3s ease';
+    });
+
+    input.addEventListener('blur', function() {
+      this.parentElement.style.transform = 'scale(1)';
+    });
+  });
+</script>
 {% endblock %}

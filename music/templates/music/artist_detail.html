@@ -1,11 +1,274 @@
-<h1>{{ artist.name }}</h1>
-<p>{{ artist.bio }}</p>
+{% extends 'music/base.html' %}
 
-<h2>Albums</h2>
-<ul>
-{% for album in albums %}
-    <li><a href="{% url 'album_detail' album.id %}">{{ album.title }}</a></li>
-{% endfor %}
-</ul>
+{% block title %}{{ artist.name }} - Spotify Clone{% endblock %}
 
-<a href="{% url 'artist_list' %}">Back to Artists</a>
+{% block content %}
+<div class="container mt-5">
+  <!-- Artist Header -->
+  <div class="artist-header mb-5 p-5 text-white" style="background: linear-gradient(135deg, #1db954 0%, #1ed760 100%); border-radius: 20px;">
+    <div class="row align-items-center">
+      <div class="col-md-3 text-center">
+        <!-- Artist Avatar -->
+        <div class="artist-avatar-large mx-auto">
+          <i class="fa-solid fa-user-music fa-5x"></i>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <p class="text-uppercase small mb-2" style="letter-spacing: 2px; opacity: 0.8;">Artist</p>
+        <h1 class="display-2 fw-bold mb-3">{{ artist.name }}</h1>
+        
+        {% if artist.bio %}
+          <p class="lead mb-3" style="max-width: 800px;">
+            {{ artist.bio }}
+          </p>
+        {% endif %}
+        
+        <div class="artist-stats d-flex align-items-center flex-wrap gap-3">
+          <span>
+            <i class="fa-solid fa-compact-disc me-2"></i>
+            <strong>{{ albums.count }}</strong> albume
+          </span>
+          <span class="text-white-50">•</span>
+          <span>
+            <i class="fa-solid fa-music me-2"></i>
+            <strong>{{ artist.songs.count }}</strong> melodii
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Albums Section -->
+  <div class="mb-5">
+    <h2 class="fw-bold mb-4">
+      <i class="fa-solid fa-compact-disc me-2 text-primary"></i>
+      Albume
+    </h2>
+
+    {% if albums %}
+      <div class="row g-4">
+        {% for album in albums %}
+          <div class="col-md-6 col-lg-4">
+            <a href="{% url 'album_detail' album.id %}" class="text-decoration-none">
+              <div class="album-card">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="album-cover-wrapper">
+                    {% if album.cover_image %}
+                      <img src="{{ album.cover_image.url }}" class="card-img-top album-cover" alt="{{ album.title }}">
+                    {% else %}
+                      <div class="album-cover-placeholder">
+                        <i class="fa-solid fa-compact-disc fa-4x"></i>
+                      </div>
+                    {% endif %}
+                    
+                    <!-- Overlay -->
+                    <div class="album-overlay">
+                      <i class="fa-solid fa-circle-play fa-3x"></i>
+                    </div>
+                  </div>
+
+                  <div class="card-body">
+                    <h5 class="card-title fw-bold mb-2 text-dark">{{ album.title }}</h5>
+                    
+                    {% if album.release_date %}
+                      <p class="card-text text-muted small mb-2">
+                        <i class="fa-solid fa-calendar me-1"></i>
+                        {{ album.release_date|date:"Y" }}
+                      </p>
+                    {% endif %}
+                    
+                    <span class="badge bg-secondary">
+                      <i class="fa-solid fa-music me-1"></i>
+                      {{ album.song_set.count }} melodii
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-compact-disc fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+        <h4 class="text-muted">Niciun album disponibil</h4>
+        <p class="text-muted">Acest artist nu are încă albume publicate</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Back Button -->
+  <div class="text-center mt-5">
+    <a href="{% url 'artists' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-arrow-left me-2"></i>
+      Înapoi la artiști
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Artist Header */
+  .artist-header {
+    animation: fadeIn 0.6s ease;
+    box-shadow: 0 10px 30px rgba(29, 185, 84, 0.4);
+  }
+
+  /* Artist Avatar Large */
+  .artist-avatar-large {
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s ease;
+  }
+
+  .artist-avatar-large:hover {
+    transform: scale(1.1) rotate(5deg);
+  }
+
+  /* Album Card */
+  .album-card {
+    transition: all 0.4s ease;
+    animation: fadeInUp 0.6s ease;
+  }
+
+  .album-card .card {
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+  }
+
+  .album-card:hover .card {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Album Cover Wrapper */
+  .album-cover-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .album-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.4s ease;
+  }
+
+  .album-card:hover .album-cover {
+    transform: scale(1.1);
+  }
+
+  .album-cover-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  /* Album Overlay */
+  .album-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: #1db954;
+  }
+
+  .album-card:hover .album-overlay {
+    opacity: 1;
+  }
+
+  .album-overlay i {
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+  }
+
+  .album-card:hover .album-overlay i {
+    transform: scale(1);
+  }
+
+  /* Badge Styling */
+  .badge {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 20px;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation for albums */
+  .album-card:nth-child(1) { animation-delay: 0.1s; }
+  .album-card:nth-child(2) { animation-delay: 0.2s; }
+  .album-card:nth-child(3) { animation-delay: 0.3s; }
+  .album-card:nth-child(4) { animation-delay: 0.4s; }
+  .album-card:nth-child(5) { animation-delay: 0.5s; }
+  .album-card:nth-child(6) { animation-delay: 0.6s; }
+
+  /* Link reset */
+  .album-card a {
+    color: inherit;
+  }
+
+  /* Button Hover */
+  .btn-outline-secondary:hover {
+    transform: translateY(-2px);
+  }
+</style>
+{% endblock %}

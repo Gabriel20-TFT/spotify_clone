@@ -1,10 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User  # pentru relația cu utilizatorul
+from django.contrib.auth.models import User
 
+
+class Genre(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
 
 class Artist(models.Model):
     name = models.CharField(max_length=200)
-    bio = models.TextField(blank=True)  # poate fi gol
+    bio = models.TextField(blank=True)
+    genre = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -12,6 +19,7 @@ class Artist(models.Model):
 
 class Album(models.Model):
     title = models.CharField(max_length=200)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='albums')  # ← ADAUGĂ
     release_date = models.DateField(null=True, blank=True)
     cover_image = models.ImageField(upload_to='album_covers/', null=True, blank=True)
 
@@ -25,7 +33,7 @@ class Song(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE, null=True, blank=True)
     audio_file = models.FileField(upload_to='songs/', null=True, blank=True)
     cover_image = models.ImageField(upload_to='covers/', null=True, blank=True)
-    duration = models.DurationField(null=True, blank=True)  # ⏱ opțional
+    duration = models.DurationField(null=True, blank=True)
 
     def __str__(self):
         return self.title

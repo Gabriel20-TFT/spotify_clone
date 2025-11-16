@@ -130,7 +130,7 @@ def artist_list(request):
 def artist_detail(request, artist_id):
     try:
         artist = get_object_or_404(Artist, id=artist_id)
-        albums = artist.album_set.all()
+        albums = artist.albums.all()
         return render(request, 'music/artist_detail.html', {'artist': artist, 'albums': albums})
     except DatabaseError:
         messages.error(request, 'Eroare la baza de date. Nu s-au putut încărca detaliile artistului.')

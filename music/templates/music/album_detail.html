@@ -1,12 +1,232 @@
-<h1>{{ album.title }}</h1>
-<p>Artist: <a href="{% url 'artist_detail' album.artist.id %}">{{ album.artist.name }}</a></p>
-<p>Release Date: {{ album.release_date }}</p>
+{% extends 'music/base.html' %}
 
-<h2>Songs</h2>
-<ul>
-{% for song in songs %}
-    <li>{{ song.title }} ({{ song.duration }})</li>
-{% endfor %}
-</ul>
+{% block title %}{{ album.title }} - Spotify Clone{% endblock %}
 
-<a href="{% url 'artist_detail' album.artist.id %}">Back to Artist</a>
+{% block content %}
+<div class="container mt-5">
+  <!-- Album Header -->
+  <div class="album-header mb-5 p-5 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px;">
+    <div class="row align-items-center">
+      <div class="col-md-3 text-center">
+        <!-- Album Cover -->
+        <div class="album-cover-large mx-auto">
+          {% if album.cover_image %}
+            <img src="{{ album.cover_image.url }}" alt="{{ album.title }}" class="img-fluid rounded shadow-lg">
+          {% else %}
+            <div class="album-placeholder">
+              <i class="fa-solid fa-compact-disc fa-5x"></i>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-9">
+        <p class="text-uppercase small mb-2" style="letter-spacing: 2px; opacity: 0.8;">Album</p>
+        <h1 class="display-3 fw-bold mb-3">{{ album.title }}</h1>
+
+        <div class="album-meta d-flex align-items-center flex-wrap gap-3">
+          <a href="{% url 'artist_detail' album.artist.id %}" class="text-white text-decoration-none fw-bold fs-5">
+            <i class="fa-solid fa-user-music me-2"></i>
+            {{ album.artist.name }}
+          </a>
+
+          {% if album.release_date %}
+            <span class="text-white-50">•</span>
+            <span>
+              <i class="fa-solid fa-calendar me-2"></i>
+              {{ album.release_date|date:"Y" }}
+            </span>
+          {% endif %}
+
+          <span class="text-white-50">•</span>
+          <span>
+            <i class="fa-solid fa-music me-2"></i>
+            {{ songs.count }} melodii
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Songs List -->
+  <div class="mb-5">
+    <h2 class="fw-bold mb-4">
+      <i class="fa-solid fa-list-music me-2 text-primary"></i>
+      Melodii din album
+    </h2>
+
+    {% if songs %}
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 50px;">#</th>
+              <th>Titlu</th>
+              <th>Durată</th>
+              <th style="width: 100px;" class="text-center">Acțiuni</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for song in songs %}
+              <tr class="song-row-item">
+                <td class="text-muted fw-bold">{{ forloop.counter }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="song-mini-icon me-3">
+                      <i class="fa-solid fa-music"></i>
+                    </div>
+                    <div>
+                      <strong>{{ song.title }}</strong>
+                      {% if song.artists.all %}
+                        <br>
+                        <small class="text-muted">
+                          {% for artist in song.artists.all %}
+                            {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                        </small>
+                      {% endif %}
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted">
+                  {% if song.duration %}
+                    <i class="fa-solid fa-clock me-1"></i>
+                    {{ song.duration }}
+                  {% else %}
+                    <span class="text-muted fst-italic">-</span>
+                  {% endif %}
+                </td>
+                <td class="text-center">
+                  <a href="{% url 'song_detail' song.id %}" class="btn btn-sm btn-outline-primary" title="Detalii">
+                    <i class="fa-solid fa-info-circle"></i>
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-music fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+        <h4 class="text-muted">Nicio melodie în acest album</h4>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex gap-3 justify-content-center">
+    <a href="{% url 'artist_detail' album.artist.id %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-arrow-left me-2"></i>
+      Înapoi la artist
+    </a>
+    <a href="{% url 'index' %}" class="btn btn-outline-primary btn-lg" style="border-radius: 10px;">
+      <i class="fa-solid fa-home me-2"></i>
+      Pagina principală
+    </a>
+  </div>
+</div>
+
+<style>
+  /* Album Header */
+  .album-header {
+    animation: fadeIn 0.6s ease;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  /* Album Cover */
+  .album-cover-large {
+    max-width: 250px;
+  }
+
+  .album-cover-large img {
+    border-radius: 15px;
+    transition: all 0.4s ease;
+  }
+
+  .album-cover-large:hover img {
+    transform: scale(1.05) rotate(-2deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .album-placeholder {
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Song Row */
+  .song-row-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .song-row-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(5px);
+  }
+
+  .song-mini-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+  }
+
+  /* Table Styling */
+  .table {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+  }
+
+  /* Button Hover */
+  .btn-outline-primary:hover,
+  .btn-outline-secondary:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Meta Links */
+  .album-meta a:hover {
+    text-decoration: underline !important;
+  }
+</style>
+{% endblock %}

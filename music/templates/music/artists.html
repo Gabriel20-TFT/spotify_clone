@@ -1,25 +1,244 @@
 {% extends 'music/base.html' %}
-{% block title %}Artiști{% endblock %}
+
+{% block title %}Artiști - Spotify Clone{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Lista Artiștilor</h2>
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold">
+      <i class="fa-solid fa-microphone me-3" style="color: #1db954;"></i>
+      Artiști
+    </h1>
+    <p class="lead text-muted">Descoperă artiștii tăi preferați</p>
+  </div>
 
-    {% if artists %}
-        <div class="row">
-            {% for artist in artists %}
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ artist.name }}</h5>
-                            <p class="card-text">{{ artist.genre }}</p>
-                        </div>
-                    </div>
+  <!-- Mesaje -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Artists Grid -->
+  {% if artists %}
+    <div class="row g-4">
+      {% for artist in artists %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+          <div class="artist-card h-100" data-artist-index="{{ forloop.counter0 }}">
+            <a href="{% url 'artist_detail' artist.id %}" class="text-decoration-none">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                  <!-- Avatar Circle -->
+                  <div class="artist-avatar mx-auto mb-3">
+                    <i class="fa-solid fa-user-music fa-3x text-white"></i>
+                  </div>
+
+                  <!-- Artist Name -->
+                  <h5 class="card-title fw-bold mb-2">{{ artist.name }}</h5>
+
+                  <!-- Bio Preview -->
+                  {% if artist.bio %}
+                    <p class="card-text text-muted small mb-3">
+                      {{ artist.bio|truncatewords:10 }}
+                    </p>
+                  {% else %}
+                    <p class="card-text text-muted small mb-3 fst-italic">
+                      Artist muzical
+                    </p>
+                  {% endif %}
+
+                  <!-- Stats -->
+                  <div class="artist-stats">
+                    <span class="badge bg-primary">
+                      <i class="fa-solid fa-music me-1"></i>
+                      {{ artist.songs.count }} melodii
+                    </span>
+                  </div>
                 </div>
-            {% endfor %}
+
+                <!-- Hover Overlay -->
+                <div class="artist-overlay">
+                  <i class="fa-solid fa-circle-play fa-3x"></i>
+                </div>
+              </div>
+            </a>
+          </div>
         </div>
-    {% else %}
-        <p class="text-center text-muted">Momentan nu există artiști în baza de date.</p>
-    {% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-5">
+      <div class="empty-state">
+        <i class="fa-solid fa-user-slash fa-5x text-muted mb-4" style="opacity: 0.3;"></i>
+        <h3 class="text-muted mb-3">Nu există artiști</h3>
+        <p class="text-muted mb-4">Momentan nu sunt artiști adăugați în bibliotecă</p>
+        <a href="{% url 'index' %}" class="btn btn-success btn-lg" style="border-radius: 10px;">
+          <i class="fa-solid fa-home me-2"></i>
+          Înapoi acasă
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Back Button -->
+  {% if artists %}
+    <div class="text-center mt-5">
+      <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+        <i class="fa-solid fa-arrow-left me-2"></i>
+        Înapoi la pagina principală
+      </a>
+    </div>
+  {% endif %}
 </div>
+
+<style>
+  /* Artist Card Styling */
+  .artist-card {
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s ease;
+    position: relative;
+  }
+
+  .artist-card .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .card {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(29, 185, 84, 0.3) !important;
+  }
+
+  /* Artist Avatar */
+  .artist-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(29, 185, 84, 0.3);
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .artist-avatar {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 12px 24px rgba(29, 185, 84, 0.5);
+  }
+
+  /* Gradient variations for avatars */
+  .artist-card:nth-child(3n+1) .artist-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  }
+
+  .artist-card:nth-child(3n+2) .artist-avatar {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+  }
+
+  .artist-card:nth-child(3n+3) .artist-avatar {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+  }
+
+  /* Hover overlay */
+  .artist-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(29, 185, 84, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.4s ease;
+    border-radius: 15px;
+    color: white;
+  }
+
+  .artist-card:hover .artist-overlay {
+    opacity: 1;
+  }
+
+  .artist-overlay i {
+    transform: scale(0.5);
+    transition: all 0.4s ease;
+  }
+
+  .artist-card:hover .artist-overlay i {
+    transform: scale(1);
+  }
+
+  /* Card Title */
+  .artist-card .card-title {
+    color: #191414;
+    font-size: 1.25rem;
+    transition: color 0.3s ease;
+  }
+
+  /* Badge Styling */
+  .artist-stats .badge {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 20px;
+  }
+
+  /* Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Stagger animation */
+  .artist-card:nth-child(1) { animation-delay: 0.05s; }
+  .artist-card:nth-child(2) { animation-delay: 0.1s; }
+  .artist-card:nth-child(3) { animation-delay: 0.15s; }
+  .artist-card:nth-child(4) { animation-delay: 0.2s; }
+  .artist-card:nth-child(5) { animation-delay: 0.25s; }
+  .artist-card:nth-child(6) { animation-delay: 0.3s; }
+  .artist-card:nth-child(7) { animation-delay: 0.35s; }
+  .artist-card:nth-child(8) { animation-delay: 0.4s; }
+  .artist-card:nth-child(9) { animation-delay: 0.45s; }
+  .artist-card:nth-child(10) { animation-delay: 0.5s; }
+  .artist-card:nth-child(11) { animation-delay: 0.55s; }
+  .artist-card:nth-child(12) { animation-delay: 0.6s; }
+
+  /* Empty State */
+  .empty-state {
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Link color reset */
+  .artist-card a {
+    color: inherit;
+  }
+
+  .artist-card a:hover {
+    color: inherit;
+  }
+</style>
 {% endblock %}
